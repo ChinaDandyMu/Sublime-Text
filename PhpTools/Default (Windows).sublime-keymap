@@ -1,0 +1,10 @@
+[
+    {"keys": ["ctrl+alt+shift+p"], "command": "phptools"},
+    {"keys": ["alt+p", "alt+l"], "command": "phptools", "args": {"iDe":"Syntax"}},
+    {"keys": ["alt+p", "alt+f"], "command": "phptools", "args": {"iDe":"execScript"}},
+    {"keys": ["alt+p", "alt+i"], "command": "phptools", "args": {"iDe":"execScript", "Type": "Lines"}},
+    {"keys": ["alt+p", "alt+s"], "command": "phptools", "args": {"iDe":"execScript", "Type": "Select"}},
+    {"keys": ["alt+p", "alt+y"], "command": "phptools", "args": {"iDe":"Stylist"}},
+    {"keys": ["alt+p", "alt+n"], "command": "phptools", "args": {"iDe":"Stylist", "Type": "Lines"}},
+    {"keys": ["alt+p", "alt+e"], "command": "phptools", "args": {"iDe":"Stylist", "Type": "Select"}}
+]

@@ -1,0 +1,34 @@
+# coding=utf-8
+
+# 定义个菜单项
+PHPTOOLSMENU = \
+[
+	{
+		"NAME": "(1) 语法检测",
+		"TYPE": "CLASS",
+		"CLASS": "phptools",
+		"ARGS": {"iDe":"Syntax"}
+	},
+	{
+		"NAME": "(2) 执行代码",
+		"TYPE": "MENU",
+		"MENU":
+		[
+			{"NAME": "(0) 返回上一级", "TYPE":"JUMP",},
+			{"NAME": "(1) 执行文件","TYPE": "CLASS","CLASS": "phptools", "ARGS": {"iDe":"execScript"}},
+			{"NAME": "(2) 执行选择行", "TYPE": "CLASS","CLASS": "phptools", "ARGS": {"iDe":"execScript", "Type": "Lines"}},
+			{"NAME": "(3) 执行选中字符", "TYPE": "CLASS","CLASS": "phptools", "ARGS": {"iDe":"execScript", "Type": "Select"}}
+		]
+	},
+	{
+		"NAME": "(3) 格式化代码",
+		"TYPE": "MENU",
+		"MENU":
+		[
+			{"NAME": "(0) 返回上一级", "TYPE":"JUMP",},
+			{"NAME": "(1) 格式化文件", "TYPE": "CLASS","CLASS": "phptools", "ARGS": {"iDe":"Stylist"}},
+			{"NAME": "(2) 格式化选择行","TYPE": "CLASS","CLASS": "phptools", "ARGS": {"iDe":"Stylist", "Type": "Lines"}},
+			{"NAME": "(3) 格式化选中字符","TYPE": "CLASS","CLASS": "phptools", "ARGS": {"iDe":"Stylist", "Type": "Select"}}
+		]
+	}
+];

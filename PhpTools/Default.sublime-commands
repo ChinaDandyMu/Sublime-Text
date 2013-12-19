@@ -1,0 +1,11 @@
+[
+    { "caption": "IDE: PHPTOOLS [显示菜单]", "command": "phptools", "args": {"iDe":"ShowContext"} },
+    { "caption": "IDE: PHPTOOLS [主面板]", "command": "phptools" },
+    { "caption": "IDE: PHPTOOLS [语法检测]", "command": "phptools", "args": {"iDe":"Syntax"} },
+    { "caption": "IDE: PHPTOOLS [执行文件]", "command": "phptools", "args": {"iDe":"execScript"} },
+    { "caption": "IDE: PHPTOOLS [执行选择行]", "command": "phptools", "args": {"iDe":"execScript", "Type": "Lines"} },
+    { "caption": "IDE: PHPTOOLS [执行选择的内容]", "command": "phptools", "args": {"iDe":"execScript", "Type": "Select"} },
+    { "caption": "IDE: PHPTOOLS [格式化文件]", "command": "phptools", "args": {"iDe":"Stylist"} },
+    { "caption": "IDE: PHPTOOLS [格式化选择行]", "command": "phptools", "args": {"iDe":"Stylist", "Type": "Lines"} },
+    { "caption": "IDE: PHPTOOLS [格式化选择的内容]", "command": "phptools", "args": {"iDe":"Stylist", "Type": "Select"} }
+]

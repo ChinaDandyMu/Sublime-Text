@@ -1,0 +1,155 @@
+# coding=utf-8
+import re
+import sys,os
+import subprocess
+import sublime, sublime_plugin
+import time
+import PHP_Menu
+
+# 定义当前菜单的对象
+PHP_Toos_Menu_Now = PHP_Toos_Menu['Menu'];
+
+# 当前脚本的文件全路径
+Script_file = os.path.realpath(__file__)
+
+# 当前脚本的路径
+Script_dir = os.path.dirname(Script_file)
+
+# 检测操作系统
+if os.name == "nt":
+	Phpexec = Script_dir+'\php.exe'
+	phpCB = sublime.packages_path()+"\Dandy\phpCB.exe"
+else:
+	phpCB = sublime.packages_path()+"\Dandy\phpCB"
+
+class DandyCommand(sublime_plugin.TextCommand):
+	def run(self, edit):
+		self.Menu = PHP_Toos_Menu_Now;	# 当前菜单
+		
+		self.Display_menu = []
+
+		for Index in self.Menu:
+			self.Display_menu.append(PHP_Toos_Langage[Index].decode('utf-8'))
+			pass
+
+		self.Display_menu.sort()
+
+		self.Vidwedit = edit
+
+		# 得到当前窗口的对象
+		self.window = sublime.active_window()
+
+		# 发起一个选择提示
+		self.window.show_quick_panel(self.Display_menu, self.on_done)
+		# self.window.show_quick_panel(['语法检测'.decode('utf-8'), '执行文件'.decode('utf-8'), '代码格式化'.decode('utf-8')], self.on_done)
+		
+		pass
+
+	# 当用户第一次选择以后
+	def on_done(self, select):
+		if select < 0: return
+
+		# 如果是语法检测或者执行的话，就得看看文件是否已经保存了。
+		if not Phpexec or not os.path.exists(Phpexec):
+			return sublime.error_message("当前系统中没有PHP的执行程序！.".decode('utf-8'))
+
+		# 当前文件的对象
+		self.FILE = self.view.file_name()
+
+		# 检测文件是否存在，也就是说文件是否已经创建，语法检测和运行的时候需要用到
+		if not self.FILE or not os.path.exists(self.FILE):
+			if sublime.ok_cancel_dialog('搞不了，是不是还没有保存文件啊?\n现在保存不?'.decode('utf-8')):
+				self.view.run_command('save')
+			else:
+				return sublime.status_message('你吖不保存，偶搞不了!'.decode('utf-8'))
+
+		# 检测当前文件是否已经保存
+		if self.view.is_dirty():
+			if sublime.ok_cancel_dialog("当前文件未保存, 是否现在保存当前文件?.".decode('utf-8')):
+				self.view.run_command('save')
+			else:
+				return sublime.status_message('文件未保存取消检测！'.decode('utf-8'))
+
+		# 检测扩展名是否为PHP
+		if not self.FILE[-3:] == 'php':
+			if not sublime.ok_cancel_dialog("当前文件可能不是PHP文件.".decode('utf-8')):
+				return sublime.status_message('取消非PHP文件的语法检测！'.decode('utf-8'))
+
+		# 语法检测
+		if select == 0:
+			self.Syntex_detection()
+		
+		# 执行文件
+		elif select == 1:
+			self.execScript()
+
+		# 代码格式化
+		elif select == 2:
+			self.parseContent()
+
+	# 语法检测
+	def Syntex_detection(self):
+		Result = os.popen('"'+Phpexec+'" -l '+self.FILE,'r').read()
+		Result = "检测结果:\n".decode('utf-8')+Result+"\n"
+		self.Output_info(Result)
+		pass
+
+	# 执行PHP文件取得结果
+	def execScript(self):
+		Result = os.popen('"'+Phpexec+'" -f '+self.FILE,'r').read()
+		Result = "执行结果:\n".decode('utf-8')+Result+"\n"
+		self.Output_info(Result)
+		sublime.status_message('执行完成!'.decode('utf-8'))
+		pass
+
+	def parseContent(self):
+
+		# 创建一个选区，也就是当前文件的所有内容
+		oRegion = sublime.Region(0, self.view.size())
+
+		# # 当前选区中的内容
+		# oContent = self.view.substr(oRegion).encode('utf-8')
+
+		# # 检测当前内容是否为空
+		# if len(oContent) == 0:
+		# 	sublime.status_message('当前内容为空！'.decode('utf-8'))
+
+		Result = os.popen('"'+Phpexec+'" -f phpStylist.php '+self.FILE,'r').read()
+		print('"'+Phpexec+'" -f phpStylist.php '+self.FILE)
+		print(len(Result))
+		# self.view.replace(self.Vidwedit, oRegion, self.fixup(Result))
+		pass
+
+	def fixup(self, string):
+		return re.sub(r'\r\n|\r', '\n', string.decode('utf-8'))
+
+	# 在终端面板中输出信息
+	def Output_info(self, string):
+		# 显示输出面板
+		show_panel_on_build = sublime.load_settings("Preferences.sublime-settings").get("show_panel_on_build", True)
+		if show_panel_on_build:
+			self.window.run_command("show_panel", {"panel": "output.exec"})
+
+		# 输出面板的对象
+		self.output_view = self.window.get_output_panel("exec")
+		self.output_view.settings().set("result_file_regex", "")
+		self.output_view.settings().set("result_line_regex", "")
+		self.output_view.settings().set("result_base_dir", "")
+		
+		string = string.replace('\r\n', '\n').replace('\r', '\n')
+
+		selection_was_at_end = (len(self.output_view.sel()) == 1
+			and self.output_view.sel()[0]
+				== sublime.Region(self.output_view.size()))
+		self.output_view.set_read_only(False)
+		edit = self.output_view.begin_edit()
+		self.output_view.insert(edit, self.output_view.size(), string)
+		if selection_was_at_end:
+			self.output_view.show(self.output_view.size())
+		self.output_view.end_edit(edit)
+		self.output_view.set_read_only(True)
+		edit = self.output_view.begin_edit()
+		self.output_view.sel().clear()
+		self.output_view.sel().add(sublime.Region(0))
+		self.output_view.end_edit(edit)
+		pass
